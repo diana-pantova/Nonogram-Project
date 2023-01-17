@@ -15,6 +15,10 @@
 
 #pragma once
 
+void clearConsole() {
+	std::cout << "\033[H\033[J";
+}
+
 template <typename T>
 void mySwap(T& a, T& b) {
 	T temp = a;
@@ -89,7 +93,7 @@ void myStrShiftRight(char* string, size_t positions, size_t strSize)
 		return;
 	}
 
-	for (int index = strLen; index >= 0; index--) {
+	for (int index = (int)strLen; index >= 0; index--) {
 		string[index + positions] = string[index];
 	}
 }
