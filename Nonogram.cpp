@@ -19,9 +19,9 @@
 #include "global-constants.h"
 #include "helper-functions.h"
 
-size_t startingMenu()
+size_t startingMenu(char* input)
 {
-	char input[MAX_INPUT_SIZE] = {};
+	
 	bool incorrectInput = false;
 	
 	do {
@@ -46,24 +46,35 @@ size_t startingMenu()
 	} while (true);
 }
 
-//size_t loginMenu()
-//{
-//}
-
-size_t signupMenu()
+size_t loginMenu(char* input)
 {
-	std::cout << "Sign-up\n";
-	std::cout << "(Type 'b' to go back.)\n\n";
-
-	char input[MAX_INPUT_SIZE] = {};
-	char fileName[MAX_INPUT_SIZE] = {};
+	char filePath[MAX_INPUT_SIZE] = {};
+	printLoginMenu();
 	
-	if (!createValidUsername(input, fileName)) {
+	if (!loginUsername(input, filePath)) {
+		return stMenu;
+	}
+	
+	if (!loginPassword(input, filePath)) {
+		return stMenu;
+	}
+
+	return account;
+}
+
+size_t signupMenu(char* input)
+{
+	std::cout << "(Type 'b' to go back.)\n\n";
+	std::cout << "Sign-up\n\n";
+
+	char filePath[MAX_INPUT_SIZE] = {};
+	
+	if (!createValidUsername(input, filePath)) {
 		clearConsole();
 		return stMenu;
 	}
 
-	std::ofstream newUser(fileName);
+	std::ofstream newUser(filePath);
 	newUser << input << std::endl;
 
 	clearConsole();
@@ -87,6 +98,7 @@ int main()
 {
 	size_t select = stMenu;
 	bool exitProgram = false;
+	char input[MAX_INPUT_SIZE] = {};
 	
 	do {
 		switch (select) {
@@ -94,15 +106,20 @@ int main()
 			exitProgram = true;
 			break;
 		case stMenu:
-			select = startingMenu();
+			select = startingMenu(input);
 			clearConsole();
 			break;
-		//case login:
-			//select = loginMenu();
-			//break;
-		case signup:
-			select = signupMenu();
+		case login:
+			select = loginMenu(input);
 			clearConsole();
+			break;
+		case signup:
+			select = signupMenu(input);
+			clearConsole();
+			break;
+		case account:
+			std::cout << "Successfully logged in! Congrats!"; // placeholder
+			exitProgram = true;
 			break;
 		default:
 			std::cout << "Error! Unknown selection! Please restart the program.";

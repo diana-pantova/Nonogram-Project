@@ -29,6 +29,24 @@ inline void printStartingMenu(bool incorrectInput)
 	}
 }
 
+inline void printLoginMenu()
+{
+	std::cout << "(Type 'b' to go back.)\n\n";
+	std::cout << "Login\n" << "Log into an existing account.\n\n";
+	std::cout << "\033[E" << "Password: " << "\033[F"; // moves cursor forward, prints, then back again
+}
+
+inline void successfulSignup(char* input)
+{
+	clearConsole();
+	std::cout << "Account successfully created!\n";
+	std::cout << "You can now log in from the Login Menu.\n";
+	std::cout << "Enjoy!\n\n";
+
+	std::cout << "(Press Enter to go back.)\n";
+	std::cin.getline(input, 1);
+}
+
 /**
 * @return -1 if 'b' - command to go back;
 *  0 if the string can be a valid username;
@@ -67,13 +85,13 @@ int checkUsernameChars(char* name)
 	return 0;
 }
 
-bool accountExists(const char* username, char* fileName)
+bool accountExists(const char* username, char* filePath)
 {
-	myStrCpy(fileName, username, MAX_INPUT_SIZE);
-	myStrCatFront(fileName, ACCOUNT_DIRECTORY, MAX_INPUT_SIZE);
-	myStrCatBack(fileName, FILE_EXTENSION, MAX_INPUT_SIZE);
+	myStrCpy(filePath, username, MAX_INPUT_SIZE);
+	myStrCatFront(filePath, ACCOUNT_DIRECTORY, MAX_INPUT_SIZE);
+	myStrCatBack(filePath, FILE_EXTENSION, MAX_INPUT_SIZE);
 	
-	std::ifstream file(fileName);
+	std::ifstream file(filePath);
 	if (file.good()) {
 		file.close();
 		return true;
@@ -86,7 +104,7 @@ bool accountExists(const char* username, char* fileName)
 * @return false if the user chose to go back,
 * true if the user finished the account creation process
 */
-bool createValidUsername(char* input, char* fileName)
+bool createValidUsername(char* input, char* filePath)
 {
 	std::cout << "Enter a username:\n";
 	int usernameChars = 1;
@@ -118,7 +136,7 @@ bool createValidUsername(char* input, char* fileName)
 			continue;
 		}
 
-		takenUsername = accountExists(input, fileName);
+		takenUsername = accountExists(input, filePath);
 		if (takenUsername) {
 			std::cout << "Username is already taken. Please try again.\n";
 		}
@@ -188,13 +206,75 @@ void createValidPass(char* input)
 	} while (!isValid);
 }
 
-inline void successfulSignup(char* input)
+void getSpecifiedLine(int line, std::ifstream &account, char* string)
 {
-	clearConsole();
-	std::cout << "Account successfully created!\n";
-	std::cout << "You can now log in from the Login Menu.\n";
-	std::cout << "Enjoy!\n\n";
+	for (size_t currentLine = 1; currentLine <= line; currentLine++) {
+		account >> string;
+	}
+}
 
-	std::cout << "(Press Enter to go back.)\n";
-	std::cin.getline(input, 1);
+bool correctPassowrd(char* input, char* filePath)
+{
+	std::ifstream account;
+	account.open(filePath);
+	
+	if (account.fail()) {
+		std::cout << "Account data couldn't be accessed. Please go back and try again.";
+		return false;
+	}
+
+	char pass[MAX_INPUT_SIZE] = {};
+	
+	getSpecifiedLine(2, account, pass);
+
+	decrypt(pass);
+	int match = myStrCmp(input, pass);
+	account.close();
+
+	return match == 0;
+}
+
+bool loginUsername(char* input, char* filePath)
+{
+	bool validUsername = false;
+	do {
+		std::cout << "Username: ";
+		std::cin.getline(input, MAX_INPUT_SIZE);
+		
+		if (myStrLen(input) == 1 && input[0] == 'b') {
+			return false;
+		}
+
+		validUsername = accountExists(input, filePath);
+		if (!validUsername) {
+			std::cout << "\n\nAn account with this username doesn't exist.\n";
+			std::cout << "If you don't have an account yet,\ngo back and choose Sign-up.\n";
+			std::cout << "\033[6F\033[K"; // moves cursor back and erases line
+		}
+
+	} while (!validUsername);
+
+	std::cout << "\033[J"; // erases unnecessary lines
+	return true;
+}
+
+bool loginPassword(char* input, char* filePath)
+{
+	bool validPass = false;
+	do {
+		std::cout << "Password: ";
+		std::cin.getline(input, MAX_INPUT_SIZE);
+		
+		if (myStrLen(input) == 1 && input[0] == 'b') {
+			return false;
+		
+		}
+		validPass = correctPassowrd(input, filePath);
+		if (!validPass) {
+			std::cout << "\nIncorrect password. Please try again.";
+			std::cout << "\033[2F\033[K"; // moves cursor back and erases line
+		}
+
+	} while (!validPass);
+	return true;
 }
