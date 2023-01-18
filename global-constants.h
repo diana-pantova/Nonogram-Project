@@ -39,3 +39,18 @@ const enum MENU_SELECTION
 	changeName = 8,
 	changePass = 9
 };
+
+const enum FILE_LINE
+{
+	name = 1,
+	pass = 2,
+	lvl1 = 3,
+	lvl2 = 4,
+	lvl3 = 5,
+	lvl4 = 6,
+	lvl5 = 7,
+	lvl6 = 8,
+	curLvl = 9,
+	curHP = 10,
+	matrixStart = 11
+};

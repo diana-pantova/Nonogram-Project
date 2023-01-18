@@ -65,23 +65,21 @@ size_t loginMenu(char* input)
 size_t signupMenu(char* input)
 {
 	std::cout << "(Type 'b' to go back.)\n\n";
-	std::cout << "Sign-up\n\n";
+	std::cout << "Sign-up\n" << "Create a new account.\n\n";
+	std::cout << "\033[E" << "Password: " << "\033[F";
 
 	char filePath[MAX_INPUT_SIZE] = {};
 	
 	if (!createValidUsername(input, filePath)) {
-		clearConsole();
 		return stMenu;
 	}
 
 	std::ofstream newUser(filePath);
 	newUser << input << std::endl;
 
-	clearConsole();
-
-	std::cout << "Sign-up\n";
-	std::cout << "Please finish the account creation process.\n\n";
-	std::cout << "Username: " << input << std::endl;
+	std::cout << "\033[H\033[K"; // moves to first line and erases it
+	std::cout << "(Cannot go back until account creation process is finished!)";
+	std::cout << "\033[6E";
 	
 	createValidPass(input);
 

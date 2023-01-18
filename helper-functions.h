@@ -43,7 +43,7 @@ inline void successfulSignup(char* input)
 	std::cout << "You can now log in from the Login Menu.\n";
 	std::cout << "Enjoy!\n\n";
 
-	std::cout << "(Press Enter to go back.)\n";
+	std::cout << "(Press Enter to continue.)\n";
 	std::cin.getline(input, 1);
 }
 
@@ -106,25 +106,30 @@ bool accountExists(const char* username, char* filePath)
 */
 bool createValidUsername(char* input, char* filePath)
 {
-	std::cout << "Enter a username:\n";
 	int usernameChars = 1;
 	bool takenUsername = true;
 	
 	do {
+		std::cout << "Username: ";
 		std::cin.getline(input, MAX_INPUT_SIZE);
 
 		usernameChars = checkUsernameChars(input);
 
 		switch (usernameChars) {
 		case 1:
-			std::cout << "Username must contain at least " << MIN_USERNAME_LEN << " characters. Please try again.\n";
+			std::cout << "\n\n\033[J" << "Username must contain at least " << MIN_USERNAME_LEN;
+			std::cout << " characters.\nPlease try again.";
+			std::cout << "\033[4F\033[K"; // moves the cursor to username line and erases
 			continue;
 		case 2:
-			std::cout << "Username must be no longer than " << MAX_USERNAME_LEN << " characters. Please try again.\n";
+			std::cout << "\n\n\033[J" << "Username must be no longer than " << MAX_USERNAME_LEN;
+			std::cout << " characters.\nPlease try again.";
+			std::cout << "\033[4F\033[K";
 			continue;
 		case 3:
-			std::cout << "Usernames must contain only uppercase and lowercase latin letters,\n"
-				<< "numbers, underscores and dashes. Please try again.\n";
+			std::cout << "\n\n\033[J" << "Usernames must contain only uppercase and lowercase latin letters,\n"
+				<< "numbers, underscores and dashes.\nPlease try again.";
+			std::cout << "\033[5F\033[K";
 			continue;
 		case 0:
 			// username is valid
@@ -132,17 +137,20 @@ bool createValidUsername(char* input, char* filePath)
 		case -1: // go back, ending the account creation process
 			return false;
 		default:
-			std::cout << "Error. Please try again.\n";
+			std::cout << "\n\nError. Please try again.";
+			std::cout << "\033[2F\033[K";
 			continue;
 		}
 
 		takenUsername = accountExists(input, filePath);
 		if (takenUsername) {
-			std::cout << "Username is already taken. Please try again.\n";
+			std::cout << "\n\n\033[J" << "Username is already taken. Please try again.";
+			std::cout << "\033[3F\033[K"; // moves the cursor to username line and erases
 		}
 
 	} while (usernameChars != 0 || takenUsername);
 	
+	std::cout << "\033[J"; // erases unnecessary lines
 	return true;
 }
 
@@ -173,17 +181,22 @@ bool isValidPass(char* pass)
 	size_t length = myStrLen(pass);
 
 	if (length < MIN_PASSWORD_LEN) {
-		std::cout << "Password must be at least " << MIN_PASSWORD_LEN << " characters long. Please try again.\n";
+		std::cout << "\n\033[J" << "Password must be at least " << MIN_PASSWORD_LEN;
+		std::cout << " characters long.\nPlease try again.";
+		std::cout << "\033[3F\033[K"; // moves the cursor to password line and erases
 		return false;
 	}
 	else if (length > MAX_PASSWORD_LEN) {
-		std::cout << "Password must be no longer than " << MAX_PASSWORD_LEN << " characters. Please try again.\n";
+		std::cout << "\n\033[J" << "Password must be no longer than " << MAX_PASSWORD_LEN;
+		std::cout << " characters.\nPlease try again.";
+		std::cout << "\033[3F\033[K";
 		return false;
 	}
 
 	for (size_t index = 0; pass[index] != '\0'; index++) {
 		if (pass[index] < '!' || pass[index] > '~') {
-			std::cout << "Passowrd contains forbidden characters. Please try again.\n";
+			std::cout << "\n\033[J" << "Passowrd contains forbidden characters. Please try again.";
+			std::cout << "\033[2F\033[K";
 			return false;
 		}
 	}
@@ -193,16 +206,14 @@ bool isValidPass(char* pass)
 
 void createValidPass(char* input)
 {
-	std::cout << "Enter a password:\n";
-	bool isValid;
-
+	bool isValid = false;
 	do {
+		std::cout << "Password: ";
 		std::cin.getline(input, MAX_INPUT_SIZE);
 		isValid = isValidPass(input);
 		if (isValid) {
 			break;
 		}
-		
 	} while (!isValid);
 }
 
@@ -219,13 +230,13 @@ bool correctPassowrd(char* input, char* filePath)
 	account.open(filePath);
 	
 	if (account.fail()) {
-		std::cout << "Account data couldn't be accessed. Please go back and try again.";
+		std::cout <<  "\n\033[J" << "Account data couldn't be accessed.\nPlease go back and try again.";
 		return false;
 	}
 
 	char pass[MAX_INPUT_SIZE] = {};
 	
-	getSpecifiedLine(2, account, pass);
+	getSpecifiedLine(FILE_LINE::pass, account, pass);
 
 	decrypt(pass);
 	int match = myStrCmp(input, pass);
