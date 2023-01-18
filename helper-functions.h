@@ -289,3 +289,50 @@ bool loginPassword(char* input, char* filePath)
 	} while (!validPass);
 	return true;
 }
+
+inline void printAccountMenu(char* input, std::ifstream& account)
+{
+	std::cout << "Welcome, ";
+	getSpecifiedLine(FILE_LINE::name, account, input);
+	std::cout << input << "!\n\n";
+	
+	getSpecifiedLine(curLvl, account, input);
+	if (input[0] == '0') {
+		std::cout << "1. New Game\n";
+	}
+	else {
+		std::cout << "1. Continue Game\n";
+
+	}
+	std::cout << "2. Level Progress\n";
+	std::cout << "3. Settings\n";
+	std::cout << "4. Log out\n";
+	std::cout << "5. Exit\n\n";
+	std::cout << "Please type a menu number:\n";
+}
+
+bool openAccount(char* filePath, std::ifstream &accountRead, std::ofstream &accountWrite)
+{
+	accountRead.open(filePath);
+	accountWrite.open(filePath);
+
+	if (accountRead.fail() || accountWrite.fail()) {
+		accountRead.close();
+		accountWrite.close();
+		std::cout << "Account data couldn't be accessed.\nPlease go back and try again.\n\n";
+		std::cout << "(Press enter to continue.)";
+		std::cin.getline(filePath, 1);
+		return false;
+	}
+
+	return true;
+}
+
+void defaultAccoutData(std::ofstream &account, char* input)
+{
+	encrypt(input);
+	account << input << std::endl;
+	for (unsigned short lineCount = lvl1; lineCount <= curLvl; lineCount++) {
+		account << "0" << std::endl;
+	}
+}

@@ -33,11 +33,11 @@ const enum MENU_SELECTION
 	login = 2,
 	signup = 3,
 	account = 4,
-	game = 5,
-	lvlProg = 6,
-	settings = 7,
-	changeName = 8,
-	changePass = 9
+	//game = 5,
+	//lvlProg = 6,
+	//settings = 7,
+	//changeName = 8,
+	//changePass = 9
 };
 
 const enum FILE_LINE

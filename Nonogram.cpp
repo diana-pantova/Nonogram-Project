@@ -25,6 +25,7 @@ size_t startingMenu(char* input)
 	bool incorrectInput = false;
 	
 	do {
+		// TODO: change printing style to new one
 		printStartingMenu(incorrectInput);
 		std::cin.getline(input, MAX_INPUT_SIZE);
 
@@ -59,6 +60,8 @@ size_t loginMenu(char* input)
 		return stMenu;
 	}
 
+	myStrCpy(input, filePath, MAX_INPUT_SIZE);
+
 	return account;
 }
 
@@ -79,17 +82,62 @@ size_t signupMenu(char* input)
 
 	std::cout << "\033[H\033[K"; // moves to first line and erases it
 	std::cout << "(Cannot go back until account creation process is finished!)";
-	std::cout << "\033[6E";
+	std::cout << "\033[6E"; // moves to current line
 	
 	createValidPass(input);
 
-	encrypt(input);
-	newUser << input << std::endl;
+	defaultAccoutData(newUser, input);
 	newUser.close();
 
 	successfulSignup(input);
 
 	return stMenu;
+}
+
+//void settingsMenu(char* input, std::ifstream& accountRead, std::ofstream& accountWrite)
+//{
+//	
+//}
+
+size_t accountMenu(char* input)
+{
+	std::ifstream accountRead;
+	std::ofstream accountWrite;
+	if (!openAccount(input, accountRead, accountWrite)) {
+		return stMenu;
+	}
+
+	printAccountMenu(input, accountRead);
+
+	while (accountRead && accountWrite) {		
+		std::cin.getline(input, MAX_INPUT_SIZE);
+
+		if (myStrLen(input) == 1) {
+			switch (input[0]) {
+			case '1':
+				//game
+				break;
+			case '2':
+				//lvl progress
+				break;
+			case '3':
+				//settings
+				break;
+			case '4': // logout
+				accountRead.close();
+				accountWrite.close();
+				return stMenu;
+			case '5': // exit
+				accountRead.close();
+				accountWrite.close();
+				return quit;
+			default:
+				break;
+			}
+		}
+		std::cout << "\033[9H\033[J";
+		std::cout << "Incorrect input.\nPlease type a valid menu number:\n";
+	}
 }
 
 int main()
@@ -116,8 +164,8 @@ int main()
 			clearConsole();
 			break;
 		case account:
-			std::cout << "Successfully logged in! Congrats!"; // placeholder
-			exitProgram = true;
+			select = accountMenu(input);
+			clearConsole();
 			break;
 		default:
 			std::cout << "Error! Unknown selection! Please restart the program.";
