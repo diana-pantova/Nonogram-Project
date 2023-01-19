@@ -9,7 +9,7 @@
 * @idnumber 7MI0600233
 * @compiler VC
 *
-* <file with global constants>
+* <header with global constants>
 *
 */
 
@@ -22,6 +22,9 @@ const size_t MAX_USERNAME_LEN = 20;
 
 const size_t MIN_PASSWORD_LEN = 5;
 const size_t MAX_PASSWORD_LEN = 20;
+
+const unsigned short MAX_FILE_LINES = 2 + 6 + 1 + 25;
+const unsigned short MAX_LINE_LEN = 25 + 24 + 1;
 
 const char ACCOUNT_DIRECTORY[] = "./UserAccounts/";
 const char FILE_EXTENSION[] = ".txt";

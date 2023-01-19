@@ -9,7 +9,7 @@
 * @idnumber 7MI0600233
 * @compiler VC
 *
-* <file with helper functions for text editing>
+* <header with helper functions for text editing>
 *
 */
 

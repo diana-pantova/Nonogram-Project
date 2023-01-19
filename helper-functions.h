@@ -9,43 +9,11 @@
 * @idnumber 7MI0600233
 * @compiler VC
 *
-* <file with miscellaneous utility functions>
+* <header with miscellaneous utility functions>
 *
 */
 
 #pragma once
-
-inline void printStartingMenu(bool incorrectInput)
-{
-	std::cout << "Welcome to Nonogram!\n\n";
-	std::cout << "1. Login\n";
-	std::cout << "2. Sign-up\n";
-	std::cout << "3. Exit\n\n";
-	if (incorrectInput) {
-		std::cout << "Incorrect input.\nPlease type a valid menu number:\n";
-	}
-	else {
-		std::cout << "Please type a menu number:\n";
-	}
-}
-
-inline void printLoginMenu()
-{
-	std::cout << "(Type 'b' to go back.)\n\n";
-	std::cout << "Login\n" << "Log into an existing account.\n\n";
-	std::cout << "\033[E" << "Password: " << "\033[F"; // moves cursor forward, prints, then back again
-}
-
-inline void successfulSignup(char* input)
-{
-	clearConsole();
-	std::cout << "Account successfully created!\n";
-	std::cout << "You can now log in from the Login Menu.\n";
-	std::cout << "Enjoy!\n\n";
-
-	std::cout << "(Press Enter to continue.)\n";
-	std::cin.getline(input, 1);
-}
 
 /**
 * @return -1 if 'b' - command to go back;
@@ -85,21 +53,6 @@ int checkUsernameChars(char* name)
 	return 0;
 }
 
-bool accountExists(const char* username, char* filePath)
-{
-	myStrCpy(filePath, username, MAX_INPUT_SIZE);
-	myStrCatFront(filePath, ACCOUNT_DIRECTORY, MAX_INPUT_SIZE);
-	myStrCatBack(filePath, FILE_EXTENSION, MAX_INPUT_SIZE);
-	
-	std::ifstream file(filePath);
-	if (file.good()) {
-		file.close();
-		return true;
-	}
-	file.close();
-	return false;
-}
-
 /**
 * @return false if the user chose to go back,
 * true if the user finished the account creation process
@@ -114,7 +67,7 @@ bool createValidUsername(char* input, char* filePath)
 		std::cin.getline(input, MAX_INPUT_SIZE);
 
 		usernameChars = checkUsernameChars(input);
-
+		// TODO: transfer to different function
 		switch (usernameChars) {
 		case 1:
 			std::cout << "\n\n\033[J" << "Username must contain at least " << MIN_USERNAME_LEN;
@@ -154,28 +107,6 @@ bool createValidUsername(char* input, char* filePath)
 	return true;
 }
 
-void encrypt(char* str)
-{
-	size_t index = 0;
-	while (str[index] != '\0') {
-		str[index] ^= '!';
-		str[index] ^= '@';
-		str[index] ^= '%';
-		index++;
-	}
-}
-
-void decrypt(char* str)
-{
-	size_t index = 0;
-	while (str[index] != '\0') {
-		str[index] ^= '%';
-		str[index] ^= '@';
-		str[index] ^= '!';
-		index++;
-	}
-}
-
 bool isValidPass(char* pass)
 {
 	size_t length = myStrLen(pass);
@@ -204,11 +135,11 @@ bool isValidPass(char* pass)
 	return true;
 }
 
-void createValidPass(char* input)
+void createValidPass(char* input, const char* message)
 {
 	bool isValid = false;
 	do {
-		std::cout << "Password: ";
+		std::cout << message;
 		std::cin.getline(input, MAX_INPUT_SIZE);
 		isValid = isValidPass(input);
 		if (isValid) {
@@ -217,16 +148,9 @@ void createValidPass(char* input)
 	} while (!isValid);
 }
 
-void getSpecifiedLine(int line, std::ifstream &account, char* string)
-{
-	for (size_t currentLine = 1; currentLine <= line; currentLine++) {
-		account >> string;
-	}
-}
-
 bool correctPassowrd(char* input, char* filePath)
 {
-	std::ifstream account;
+	std::fstream account;
 	account.open(filePath);
 	
 	if (account.fail()) {
@@ -234,9 +158,9 @@ bool correctPassowrd(char* input, char* filePath)
 		return false;
 	}
 
-	char pass[MAX_INPUT_SIZE] = {};
+	char pass[MAX_PASSWORD_LEN] = {};
 	
-	getSpecifiedLine(FILE_LINE::pass, account, pass);
+	getSpecifiedLine(FILE_LINE::pass, account, pass, MAX_PASSWORD_LEN + 1);
 
 	decrypt(pass);
 	int match = myStrCmp(input, pass);
@@ -252,7 +176,7 @@ bool loginUsername(char* input, char* filePath)
 		std::cout << "Username: ";
 		std::cin.getline(input, MAX_INPUT_SIZE);
 		
-		if (myStrLen(input) == 1 && input[0] == 'b') {
+		if (input[0] == 'b' && input[1] == '\0') {
 			return false;
 		}
 
@@ -276,7 +200,7 @@ bool loginPassword(char* input, char* filePath)
 		std::cout << "Password: ";
 		std::cin.getline(input, MAX_INPUT_SIZE);
 		
-		if (myStrLen(input) == 1 && input[0] == 'b') {
+		if (input[0] == 'b' && input[1] == '\0') {
 			return false;
 		
 		}
@@ -290,49 +214,60 @@ bool loginPassword(char* input, char* filePath)
 	return true;
 }
 
-inline void printAccountMenu(char* input, std::ifstream& account)
+bool confirmPass(char* input, char* correctPass)
 {
-	std::cout << "Welcome, ";
-	getSpecifiedLine(FILE_LINE::name, account, input);
-	std::cout << input << "!\n\n";
+	do {
+		std::cout << "Current password: ";
+		std::cin.getline(input, MAX_INPUT_SIZE);
+
+		if (input[0] == 'b' && input[1] == '\0') {
+			return false;
+		}
+		if (myStrCmp(input, correctPass) == 0) {
+			break;
+		}
+		else {
+			std::cout << "\n\nIncorrect password. Please try again.";
+			std::cout << "\033[5H\033[K";
+		}
+
+	} while (true);
 	
-	getSpecifiedLine(curLvl, account, input);
-	if (input[0] == '0') {
-		std::cout << "1. New Game\n";
-	}
-	else {
-		std::cout << "1. Continue Game\n";
-
-	}
-	std::cout << "2. Level Progress\n";
-	std::cout << "3. Settings\n";
-	std::cout << "4. Log out\n";
-	std::cout << "5. Exit\n\n";
-	std::cout << "Please type a menu number:\n";
-}
-
-bool openAccount(char* filePath, std::ifstream &accountRead, std::ofstream &accountWrite)
-{
-	accountRead.open(filePath);
-	accountWrite.open(filePath);
-
-	if (accountRead.fail() || accountWrite.fail()) {
-		accountRead.close();
-		accountWrite.close();
-		std::cout << "Account data couldn't be accessed.\nPlease go back and try again.\n\n";
-		std::cout << "(Press enter to continue.)";
-		std::cin.getline(filePath, 1);
-		return false;
-	}
-
 	return true;
 }
 
-void defaultAccoutData(std::ofstream &account, char* input)
+void changePassword(char* input, std::fstream& account, char* filePath)
 {
-	encrypt(input);
-	account << input << std::endl;
-	for (unsigned short lineCount = lvl1; lineCount <= curLvl; lineCount++) {
-		account << "0" << std::endl;
+	printChangePass();
+
+	char correctPass[MAX_PASSWORD_LEN + 1] = {};
+	//getSpecifiedLine(FILE_LINE::pass, account, correctPass);
+	getSpecifiedLine(pass, account, correctPass,MAX_PASSWORD_LEN + 1);
+	decrypt(correctPass);
+
+	if (!confirmPass(input, correctPass)) {
+		return;
 	}
+
+	std::cout << "\033[H\033[K";
+	std::cout << "(Cannot go back until password has been successfully changed.)";
+	std::cout << "\033[6H\033[J";
+
+	createValidPass(input, "New password: ");
+	encrypt(input);
+
+	char newData[MAX_FILE_LINES][MAX_LINE_LEN] = {};
+	myStrCpy(newData[pass - 1], input, MAX_FILE_LINES);
+
+
+	account.seekp(0, std::ios::beg);
+	for (unsigned short line = 0; line < MAX_FILE_LINES; line++) {
+		if (line != pass - 1) {
+			account.getline(newData[line], MAX_LINE_LEN);
+		}
+	}
+	
+	rewriteFileData(filePath, newData, account);
+
+	successfulPassChange(input);
 }

@@ -17,7 +17,10 @@
 #include <fstream>
 #include "text-editing.h"
 #include "global-constants.h"
+#include "file-helper.h"
+#include "print-helper.h"
 #include "helper-functions.h"
+
 
 size_t startingMenu(char* input)
 {
@@ -29,7 +32,7 @@ size_t startingMenu(char* input)
 		printStartingMenu(incorrectInput);
 		std::cin.getline(input, MAX_INPUT_SIZE);
 
-		if (myStrLen(input) == 1) {
+		if (input[1] == '\0') {
 			switch (input[0]) {
 			case '1':
 				return login;
@@ -84,7 +87,7 @@ size_t signupMenu(char* input)
 	std::cout << "(Cannot go back until account creation process is finished!)";
 	std::cout << "\033[6E"; // moves to current line
 	
-	createValidPass(input);
+	createValidPass(input, "Password: ");
 
 	defaultAccoutData(newUser, input);
 	newUser.close();
@@ -94,25 +97,54 @@ size_t signupMenu(char* input)
 	return stMenu;
 }
 
-//void settingsMenu(char* input, std::ifstream& accountRead, std::ofstream& accountWrite)
-//{
-//	
-//}
+void settingsMenu(char* input, std::fstream& account, char* filePath)
+{
+	bool incorrectInput;
+	do {
+		incorrectInput = false;
+		printSettingsMenu(incorrectInput);
+		std::cin.getline(input, MAX_INPUT_SIZE);
+
+		if (input[1] == '\0') {
+			switch (input[0]) {
+			case 'b':
+				return;
+			case '1':
+				changePassword(input, account, filePath);
+				clearConsole();
+				break;
+			default:
+				incorrectInput = true;
+				break;
+			}
+		}
+		else {
+			incorrectInput = true;
+		}
+		clearConsole();
+
+	} while (true);
+}
 
 size_t accountMenu(char* input)
 {
-	std::ifstream accountRead;
-	std::ofstream accountWrite;
-	if (!openAccount(input, accountRead, accountWrite)) {
+	std::fstream account;
+	char filePath[MAX_INPUT_SIZE] = {};
+	myStrCpy(filePath, input, MAX_INPUT_SIZE);
+
+	if (!openAccount(filePath, account)) {
 		return stMenu;
 	}
 
-	printAccountMenu(input, accountRead);
+	bool incorrectInput = false;
 
-	while (accountRead && accountWrite) {		
+	while (account.is_open()) {
+		printAccountMenu(input, account, incorrectInput);
+		
 		std::cin.getline(input, MAX_INPUT_SIZE);
-
-		if (myStrLen(input) == 1) {
+		incorrectInput = false;
+		
+		if (input[1] == '\0') {
 			switch (input[0]) {
 			case '1':
 				//game
@@ -121,23 +153,32 @@ size_t accountMenu(char* input)
 				//lvl progress
 				break;
 			case '3':
-				//settings
+				clearConsole();
+				settingsMenu(input, account, filePath);
+				clearConsole();
 				break;
 			case '4': // logout
-				accountRead.close();
-				accountWrite.close();
+				account.close();
 				return stMenu;
 			case '5': // exit
-				accountRead.close();
-				accountWrite.close();
+				account.close();
 				return quit;
 			default:
+				incorrectInput = true;
 				break;
 			}
 		}
-		std::cout << "\033[9H\033[J";
-		std::cout << "Incorrect input.\nPlease type a valid menu number:\n";
+		else {
+			incorrectInput = true;
+		}
 	}
+
+	clearConsole();
+	std::cout << "Error! File crashed! Returning to main menu!\n\n";
+	std::cout << "(Press enter to continue.)";
+	std::cin.getline(input, 1);
+
+	return stMenu;
 }
 
 int main()
