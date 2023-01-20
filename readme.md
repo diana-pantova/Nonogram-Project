@@ -1,5 +1,5 @@
 
-#Nonogram
+# Nonogram
 
 Users can create an account with a username and a password  
 and use them to log in.
