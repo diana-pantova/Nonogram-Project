@@ -283,3 +283,91 @@ void changePassword(char* input, std::fstream& account, char* filePath)
 
 	successfulPassChange(input);
 }
+
+const Level* listOfLevels(unsigned short level, bool version)
+{
+	switch (version) {
+	case 0:
+		switch (level) {
+		case 1:
+			return &lvl1_1;
+		case 2: 
+			return &lvl2_1;
+		case 3: 
+			return &lvl3_1;
+		case 4:
+			return &lvl4_1;
+		case 5:
+			return &lvl5_1;
+		default:
+			return nullptr;
+		}
+	case 1:
+		switch (level) {
+		case 1:
+			return &lvl1_2;
+		case 2:
+			return &lvl2_2;
+		case 3:
+			return &lvl3_2;
+		case 4:
+			return &lvl4_2;
+		case 5:
+			return &lvl5_2;
+		default:
+			return nullptr;
+		}
+	}
+	return nullptr;
+}
+
+void readCurrProg(unsigned short(&currProg)[MAX_LVL_SIZE][MAX_LVL_SIZE], std::fstream& account)
+{
+	account.seekg(-1, std::ios::end);
+	for (int i = MAX_LVL_SIZE - 1; i >= 0; i--) {
+		for (int j = MAX_LVL_SIZE - 1; j >= 0; j--) {
+			char c;
+			account.get(c);
+			currProg[i][j] = (unsigned short)(c - '0');
+			account.seekg(-3, std::ios::cur);
+		}
+		account.seekg(-1, std::ios::cur);
+	}
+}
+
+void defineCurrProg(unsigned short (&currProg)[MAX_LVL_SIZE][MAX_LVL_SIZE])
+{
+	for (int i = 0; i < MAX_LVL_SIZE; i++) {
+		for (int j = 0; j < MAX_LVL_SIZE; j++) {
+			currProg[i][j] = 2;
+		}
+	}
+}
+
+const Level * pickCorrectLevel(char* input, std::fstream& account, unsigned short& currLives, unsigned short (&currProg)[MAX_LVL_SIZE][MAX_LVL_SIZE])
+{
+	unsigned short level;
+	bool version;
+
+	getSpecifiedLine(FILE_LINE::curLvl, account, input, MAX_INPUT_SIZE);
+	
+	// if no game is in progress
+	if (input[0] == '0') {
+		getSpecifiedLine(FILE_LINE::nextUnlocked, account, input, MAX_INPUT_SIZE);
+		level = input[0] - '0';
+		getSpecifiedLine(level + FILE_LINE::pass, account, input, MAX_INPUT_SIZE);
+		version = input[2] - '0';
+		currLives = input[4] - '0';
+		defineCurrProg(currProg);
+	}
+	else {
+		level = input[0] - '0';
+		version = input[2] - '0';
+		currLives = input[4] - '0';
+		readCurrProg(currProg, account);
+	}
+
+	const Level* correctLevel = listOfLevels(level, version);
+
+	return correctLevel;
+}

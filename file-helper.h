@@ -69,7 +69,13 @@ void defaultAccoutData(std::ofstream& account, char* input, int seed)
 
 	for (unsigned short lvl = 0; lvl < NUM_OF_LVL; lvl++) {
 		seed++;
-		account << "0 " << (rand() % 2) + 1 <<" 0" << std::endl;
+		account << "0 " << (rand() % 2);
+		if (lvl < NUM_OF_LVL - 2) {
+			account << " " << lvl1_1.MAX_HEARTS << std::endl;
+		}
+		else {
+			account << " " << lvl5_1.MAX_HEARTS << std::endl;
+		}
 	}
 
 	// next unlocked level

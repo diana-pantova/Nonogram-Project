@@ -53,6 +53,5 @@ const enum FILE_LINE
 	lvl5 = 7,
 	nextUnlocked = 8,
 	curLvl = 9,
-	curHP = 10,
-	matrixStart = 11
+	matrixStart = 10
 };

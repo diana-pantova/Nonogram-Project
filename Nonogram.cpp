@@ -18,14 +18,13 @@
 #include <cstdlib>
 #include "text-editing.h"
 #include "global-constants.h"
+#include "level-descriptions.h"
 #include "file-helper.h"
 #include "print-helper.h"
 #include "helper-functions.h"
-#include "level-descriptions.h"
 
 size_t startingMenu(char* input)
 {
-	
 	bool incorrectInput = false;
 	
 	do {
@@ -127,6 +126,15 @@ void settingsMenu(char* input, std::fstream& account, char* filePath)
 	} while (true);
 }
 
+void game(char* input, std::fstream& account)
+{
+	unsigned short currLives = 0;
+	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE] = {};
+	const Level * level = pickCorrectLevel(input, account, currLives, currProg);
+	
+
+}
+
 size_t accountMenu(char* input)
 {
 	std::fstream account;
@@ -148,7 +156,9 @@ size_t accountMenu(char* input)
 		if (input[1] == '\0') {
 			switch (input[0]) {
 			case '1':
-				//game
+				clearConsole();
+				game(input, account);
+				clearConsole();
 				break;
 			case '2':
 				//lvl progress
