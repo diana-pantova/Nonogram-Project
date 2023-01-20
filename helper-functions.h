@@ -70,19 +70,19 @@ bool createValidUsername(char* input, char* filePath)
 		// TODO: transfer to different function
 		switch (usernameChars) {
 		case 1:
-			std::cout << "\n\n\033[J" << "Username must contain at least " << MIN_USERNAME_LEN;
+			std::cout << "\n\n" << CSI << "J" << "Username must contain at least " << MIN_USERNAME_LEN;
 			std::cout << " characters.\nPlease try again.";
-			std::cout << "\033[4F\033[K"; // moves the cursor to username line and erases
+			std::cout << CSI << "4F" << CSI << "K"; // moves the cursor to username line and erases
 			continue;
 		case 2:
-			std::cout << "\n\n\033[J" << "Username must be no longer than " << MAX_USERNAME_LEN;
+			std::cout << "\n\n" << CSI << "J" << "Username must be no longer than " << MAX_USERNAME_LEN;
 			std::cout << " characters.\nPlease try again.";
-			std::cout << "\033[4F\033[K";
+			std::cout << CSI << "4F" << CSI << "K";;
 			continue;
 		case 3:
-			std::cout << "\n\n\033[J" << "Usernames must contain only uppercase and lowercase latin letters,\n"
+			std::cout << "\n\n" << CSI << "J" << "Usernames must contain only uppercase and lowercase latin letters,\n"
 				<< "numbers, underscores and dashes.\nPlease try again.";
-			std::cout << "\033[5F\033[K";
+			std::cout << CSI << "5F" << CSI << "K";
 			continue;
 		case 0:
 			// username is valid
@@ -91,19 +91,19 @@ bool createValidUsername(char* input, char* filePath)
 			return false;
 		default:
 			std::cout << "\n\nError. Please try again.";
-			std::cout << "\033[2F\033[K";
+			std::cout << CSI << "2F" << CSI << "K";
 			continue;
 		}
 
 		takenUsername = accountExists(input, filePath);
 		if (takenUsername) {
-			std::cout << "\n\n\033[J" << "Username is already taken. Please try again.";
-			std::cout << "\033[3F\033[K"; // moves the cursor to username line and erases
+			std::cout << "\n\n" << CSI << "J" << "Username is already taken. Please try again.";
+			std::cout << CSI << "3F" << CSI << "K"; // moves the cursor to username line and erases
 		}
 
 	} while (usernameChars != 0 || takenUsername);
 	
-	std::cout << "\033[J"; // erases unnecessary lines
+	std::cout << CSI << "J"; // erases unnecessary lines
 	return true;
 }
 
@@ -112,22 +112,22 @@ bool isValidPass(char* pass)
 	size_t length = myStrLen(pass);
 
 	if (length < MIN_PASSWORD_LEN) {
-		std::cout << "\n\033[J" << "Password must be at least " << MIN_PASSWORD_LEN;
+		std::cout << "\n" << CSI << "J" << "Password must be at least " << MIN_PASSWORD_LEN;
 		std::cout << " characters long.\nPlease try again.";
-		std::cout << "\033[3F\033[K"; // moves the cursor to password line and erases
+		std::cout << CSI << "3F" << CSI << "K"; // moves the cursor to password line and erases
 		return false;
 	}
 	else if (length > MAX_PASSWORD_LEN) {
-		std::cout << "\n\033[J" << "Password must be no longer than " << MAX_PASSWORD_LEN;
+		std::cout << "\n" << CSI << "J" << "Password must be no longer than " << MAX_PASSWORD_LEN;
 		std::cout << " characters.\nPlease try again.";
-		std::cout << "\033[3F\033[K";
+		std::cout << CSI << "3F" << CSI << "K";
 		return false;
 	}
 
 	for (size_t index = 0; pass[index] != '\0'; index++) {
 		if (pass[index] < '!' || pass[index] > '~') {
-			std::cout << "\n\033[J" << "Passowrd contains forbidden characters. Please try again.";
-			std::cout << "\033[2F\033[K";
+			std::cout << "\n" << CSI << "J" << "Passowrd contains forbidden characters. Please try again.";
+			std::cout << CSI << "2F" << CSI << "K";
 			return false;
 		}
 	}
@@ -193,12 +193,12 @@ bool loginUsername(char* input, char* filePath)
 		if (!validUsername) {
 			std::cout << "\n\nAn account with this username doesn't exist.\n";
 			std::cout << "If you don't have an account yet,\ngo back and choose Sign-up.\n";
-			std::cout << "\033[6F\033[K"; // moves cursor back and erases line
+			std::cout << CSI << "6F" << CSI << "K"; // moves cursor back and erases line
 		}
 
 	} while (!validUsername);
 
-	std::cout << "\033[J"; // erases unnecessary lines
+	std::cout << CSI << "J"; // erases unnecessary lines
 	return true;
 }
 
@@ -216,7 +216,7 @@ bool loginPassword(char* input, char* filePath)
 		validPass = correctPassowrd(input, filePath);
 		if (!validPass) {
 			std::cout << "\nIncorrect password. Please try again.";
-			std::cout << "\033[2F\033[K"; // moves cursor back and erases line
+			std::cout << CSI << "2F" << CSI << "K"; // moves cursor back and erases line
 		}
 
 	} while (!validPass);
@@ -237,7 +237,7 @@ bool confirmPass(char* input, char* correctPass)
 		}
 		else {
 			std::cout << "\n\nIncorrect password. Please try again.";
-			std::cout << "\033[5H\033[K";
+			std::cout << CSI << "5H" << CSI << "K";
 		}
 
 	} while (true);
@@ -258,9 +258,9 @@ void changePassword(char* input, std::fstream& account, char* filePath)
 		return;
 	}
 
-	std::cout << "\033[H\033[K";
+	std::cout << CSI << "H" << CSI << "K";
 	std::cout << "(Cannot go back until password has been successfully changed.)";
-	std::cout << "\033[6H\033[J";
+	std::cout << CSI << "6H" << CSI << "J";
 
 	createValidPass(input, "New password: ");
 	encrypt(input);

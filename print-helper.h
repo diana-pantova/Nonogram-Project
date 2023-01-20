@@ -33,7 +33,7 @@ inline void printLoginMenu()
 {
 	std::cout << "(Type 'b' to go back.)\n\n";
 	std::cout << "Login\n" << "Log into an existing account.\n\n";
-	std::cout << "\033[E" << "Password: " << "\033[F"; // moves cursor forward, prints, then back again
+	std::cout << CSI << "E" << "Password: " << CSI << "F"; // moves cursor forward, prints, then back again
 }
 
 inline void printSettingsMenu(bool incorrectInput)
@@ -102,9 +102,9 @@ inline void printChangePass()
 	clearConsole();
 	std::cout << "(Type b to go back.)\n\n";
 	std::cout << "Change Password\n\n";
-	std::cout << "\033[6H";
+	std::cout << CSI << "6H";
 	std::cout << "New password: \n";
-	std::cout << "\033[5H";
+	std::cout << CSI << "5H";
 }
 
 inline void successfulPassChange(char* input)

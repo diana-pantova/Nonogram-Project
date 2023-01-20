@@ -16,8 +16,8 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-#include "text-editing.h"
 #include "global-constants.h"
+#include "text-editing.h"
 #include "level-descriptions.h"
 #include "file-helper.h"
 #include "print-helper.h"
@@ -71,7 +71,7 @@ size_t signupMenu(char* input)
 {
 	std::cout << "(Type 'b' to go back.)\n\n";
 	std::cout << "Sign-up\n" << "Create a new account.\n\n";
-	std::cout << "\033[E" << "Password: " << "\033[F";
+	std::cout << CSI << "E" << "Password: " << CSI << "F";
 
 	char filePath[MAX_INPUT_SIZE] = {};
 	
@@ -86,9 +86,9 @@ size_t signupMenu(char* input)
 	newUser << input << std::endl;
 	int seed = createSeed(input);
 
-	std::cout << "\033[H\033[K"; // moves to first line and erases it
+	std::cout << CSI << "H" << CSI << "K"; // moves to first line and erases it
 	std::cout << "(Cannot go back until account creation process is finished!)";
-	std::cout << "\033[6E"; // moves to current line
+	std::cout << CSI << "6E"; // moves to current line
 	
 	createValidPass(input, "Password: ");
 

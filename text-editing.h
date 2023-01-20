@@ -16,14 +16,7 @@
 #pragma once
 
 void clearConsole() {
-	std::cout << "\033[H\033[J";
-}
-
-template <typename T>
-void mySwap(T& a, T& b) {
-	T temp = a;
-	a = b;
-	b = temp;
+	std::cout << CSI << "H" << CSI << "J";
 }
 
 /**
