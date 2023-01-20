@@ -130,9 +130,58 @@ void game(char* input, std::fstream& account)
 {
 	unsigned short currLives = 0;
 	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE] = {};
-	const Level * level = pickCorrectLevel(input, account, currLives, currProg);
-	printBoard(level, currProg, currLives);
+	const Level * lvl = pickCorrectLevel(input, account, currLives, currProg);
+	printBoard(lvl, currProg, currLives);
     
+	Point A1, print;
+	assignPointCoord(lvl, A1, print);
+	bool goBack = false,
+		validAction = true,
+		alrMarked = false,
+		correctGuess = true,
+		alive = true,
+		success = false,
+		bigBoard = lvl->LEVEL > (NUM_OF_LVL - 2);
+
+	do {
+		printLastLines(validAction, correctGuess, alrMarked, currLives, print);
+		validAction = true;
+		correctGuess = true;
+		alrMarked = false;
+
+		std::cin.getline(input, MAX_INPUT_SIZE);
+
+		if (input[0] == 'b' && input[1] == '\0') {
+			goBack = true;
+		}
+		validAction = validGameAction(input, lvl, bigBoard);
+		if (!validAction) {
+			continue;
+		}
+
+		Point action = {};
+		getActionCoord(action, input, bigBoard);
+		if (currProg[action.y][action.x] != 2) {
+			alrMarked = true;
+			continue;
+		}
+		
+		bool guess = (input[3 + bigBoard] == 'f') ? 1 : 0;
+		correctGuess = isCorrectGuess(action, guess, lvl);
+		
+		if (correctGuess) {
+			currProg[action.y][action.x] = guess;
+			if (updateBoard(action, currProg, lvl, A1)) {
+				success = true;
+			}
+		}
+		else {
+			currLives--;
+			alive = currLives > 0;
+		}
+	} while (!goBack && alive && !success);
+
+	results(assignResult(goBack, alive, success), print, input, currLives, currProg, lvl);
 }
 
 size_t accountMenu(char* input)

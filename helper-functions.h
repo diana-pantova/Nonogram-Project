@@ -371,3 +371,197 @@ const Level * pickCorrectLevel(char* input, std::fstream& account, unsigned shor
 
 	return correctLevel;
 }
+
+void assignPointCoord(const Level * lvl, Point& A1, Point& print)
+{
+	A1 = {
+		(unsigned short)(COORD_HELPER.x + 2 * lvl->MAX_INSTR),
+		(unsigned short)(COORD_HELPER.y + lvl->MAX_INSTR)
+	};
+	print = {
+		1,
+		(unsigned short)(2 * lvl->SIZE + A1.y + 6)
+	};
+}
+
+bool validGameAction(char* input, const Level * lvl, bool bigBoard)
+{
+	size_t inputLen = myStrLen(input);
+
+	if (inputLen != (size_t)(4 + bigBoard)) {
+		return false;
+	}
+	else if (input[0] < 'a' || input[0] >= ('a' + lvl->SIZE)) {
+		return false;
+	}
+	else if (input[1 + bigBoard] < '1' || input[1] >= ('1' + lvl->SIZE)) {
+		return false;
+	}
+	else if (input[2 + bigBoard] != ' ') {
+		return false;
+	}
+	else if (!(input[3 + bigBoard] == 'f' || input[3] == 'e')) {
+		return false;
+	}
+
+	if (bigBoard) {
+		if (input[1] < '1' || input[1] > '9') {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void getActionCoord(Point& action, char* input, bool bigBoard)
+{
+	action.x = input[0] - 'a';
+
+	if (bigBoard && input[2] != ' ') {
+		action.y = (input[1] - '1' + 1) * 10;
+		action.y += input[2] - '1';
+	}
+	else {
+		action.y = input[1] - '1';
+	}
+}
+
+inline bool isCorrectGuess(Point action, bool guess, const Level* lvl)
+{
+	if (lvl->DESCRIPTION[action.y][action.x] == guess) {
+		return true;
+	}
+	return false;
+}
+
+/**
+* @return - true if the row is correctly and fully filled
+*/
+bool checkRows(Point action, unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], const Level* lvl)
+{
+	for (unsigned short element = 0; element < lvl->SIZE; element++) {
+		if (lvl->DESCRIPTION[action.y][element] == 1) {
+			if (currProg[action.y][element] != 1) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+/**
+* @return - true if the column is correctly and fully filled
+*/
+bool checkColumns(Point action, unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], const Level* lvl)
+{
+	for (unsigned short line = 0; line < lvl->SIZE; line++) {
+		if (lvl->DESCRIPTION[line][action.x] == 1) {
+			if (currProg[line][action.x] != 1) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool checkFullBoard(unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], const Level * lvl)
+{
+	for (unsigned short line = 0; line < lvl->SIZE; line++) {
+		for (unsigned short element = 0; element < lvl->SIZE; element++) {
+			if (currProg[line][element] != (unsigned short)lvl->DESCRIPTION[line][element]) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void updateBox(Point console, bool guess)
+{
+	std::cout << CSI << console.y << ";" << console.x << "H";
+	if (guess) {
+		std::cout << "X";
+		return;
+	}
+	std::cout << "-";
+}
+
+void updateRow(unsigned short row, const Level* lvl, 
+	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], Point A1, unsigned short console_y)
+{
+	for (unsigned short element = 0; element < lvl->SIZE; element++)
+	{
+		if (lvl->DESCRIPTION[row][element] == 0) {
+			currProg[row][element] = 0;
+			std::cout << CSI << console_y << ";" << (A1.x + element * OFFSET.x + element / 5) << "H";
+			std::cout << "-";
+		}
+	}
+}
+
+void updateColumn(unsigned short column, const Level* lvl,
+	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], Point A1, unsigned short console_x)
+{
+	for (unsigned short line = 0; line < lvl->SIZE; line++)
+	{
+		if (lvl->DESCRIPTION[line][column] == 0) {
+			currProg[line][column] = 0;
+			std::cout << CSI << (A1.y + line * OFFSET.y) << ";" << console_x << "H";
+			std::cout << "-";
+		}
+	}
+}
+
+bool updateBoard(Point action, unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], const Level* lvl, Point A1)
+{
+	Point console = {
+	(unsigned short)(A1.x + action.x * OFFSET.x + action.x / 5),
+	(unsigned short)(A1.y + action.y * OFFSET.y)
+	};
+
+	updateBox(console, currProg[action.y][action.x]);
+
+	bool fullRow = checkRows(action, currProg, lvl);
+	bool fullColumn = checkColumns(action, currProg, lvl);
+
+	if (fullRow) {
+		updateRow(action.y, lvl, currProg, A1, console.y);
+	}
+	
+	if (fullColumn) {
+		updateColumn(action.x, lvl, currProg, A1, console.x);
+	}
+	
+	return checkFullBoard(currProg, lvl);
+}
+
+unsigned short assignResult(bool goBack, bool alive, bool success)
+{
+	if (success) {
+		return 0;
+	}
+	if (!alive) {
+		return 1;
+	}
+	if (goBack) {
+		return 2;
+	}
+}
+
+void results(unsigned short result, Point print, char* input, unsigned short currLives,
+	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], const Level * lvl)
+{
+	switch (result) {
+	case 0:
+		successfulLevel(print, input, lvl);
+		//update account
+		return;
+	case 1:
+		gameOver(print, input);
+		//update account
+		return;
+	case 2:
+		//save progress
+		return;
+	}
+}

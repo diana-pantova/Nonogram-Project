@@ -30,6 +30,18 @@ const unsigned short MAX_INSTR_SIZE = 5;
 const unsigned short MAX_FILE_LINES = 2 + NUM_OF_LVL + 3 + MAX_LVL_SIZE;
 const unsigned short MAX_LINE_LEN = MAX_LVL_SIZE * 2;
 
+struct Point {
+	unsigned short x;
+	unsigned short y;
+};
+
+const Point COORD_HELPER = { 7, 8 };
+const Point OFFSET = { 4, 2 };
+const Point LIVES = { 8, 5 };
+
+const char* ERASE_CHAR = "\b ";
+const char* CSI = "\033[";
+
 const char ACCOUNT_DIRECTORY[] = "./UserAccounts/";
 const char FILE_EXTENSION[] = ".txt";
 

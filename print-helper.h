@@ -233,8 +233,9 @@ void printBottomCoord(const Level* lvl)
 		if (i % 5 == 0 && i != 0) {
 			std::cout << " ";
 		}
-		std::cout << " " << (char)('A' + i) << "  ";
+		std::cout << " " << (char)('a' + i) << "  ";
 	}
+	std::cout << std::endl;
 }
 
 void printBoard(const Level* lvl, unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], unsigned short currLives)
@@ -249,9 +250,50 @@ void printBoard(const Level* lvl, unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_
 	printBoardBody(lvl, currProg);
 	printBottomCoord(lvl);
 
-	std::cout << "\nActions:\n";
-	std::cout << "F - fill\n" << "X - cross\n\n";
-	std::cout << "Please type a coordinate and an action (e.g.: A1 F):\n";
+	std::cout << "\nGuesses:\t\t" << "Board state:\n";
+	std::cout << "f - full\t\t" << "X - full\n";
+	std::cout << "e - empty\t\t" << "- - empty\n\n";
+}
 
+void printLastLines(bool validAction, bool correctGuess, bool alrMarked, unsigned short currLives, Point print)
+{
+	std::cout << CSI << print.y << "H" << CSI << "J";
 
+	if (!validAction) {
+		std::cout << "Invalid input!\n";
+	}
+	else if (alrMarked) {
+		std::cout << "Box is already marked!\n";
+	}
+	else if (!correctGuess) {
+		std::cout << CSI << LIVES.y << ";" << LIVES.x << "H";
+		std::cout << ERASE_CHAR << currLives;
+		std::cout << CSI << print.y << "H";
+		std::cout << "Wrong guess!\n" << "-1 Life\n";
+	}
+	std::cout << "Please type a coordinate and a guess (e.g.: a1 f):\n";
+}
+
+inline void gameOver(Point print, char* input)
+{
+	std::cout << CSI << "H" << CSI << "K"; //deletes first line
+	std::cout << CSI << LIVES.y << ";" << LIVES.x << "H";
+	std::cout << ERASE_CHAR << 0;
+
+	std::cout << CSI << print.y << "H" << CSI << "J";
+	std::cout << "Game Over!\n\n";
+
+	std::cout << "(Press enter to continue.)\n";
+	std::cin.getline(input, 1);
+}
+
+inline void successfulLevel(Point print, char* input, const Level * lvl)
+{
+	std::cout << CSI << "H" << CSI << "K"; //deletes first line
+	std::cout << CSI << print.y << "H" << CSI << "J";
+	std::cout << "Congratulations! Completed level ";
+	std::cout << lvl->LEVEL << " - \"" << lvl->TITLE << "\"!\n\n";
+
+	std::cout << "(Press enter to continue.)\n";
+	std::cin.getline(input, 1);
 }
