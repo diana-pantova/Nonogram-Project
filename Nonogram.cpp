@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include "text-editing.h"
 #include "global-constants.h"
 #include "file-helper.h"
@@ -28,7 +29,6 @@ size_t startingMenu(char* input)
 	bool incorrectInput = false;
 	
 	do {
-		// TODO: change printing style to new one
 		printStartingMenu(incorrectInput);
 		std::cin.getline(input, MAX_INPUT_SIZE);
 
@@ -82,6 +82,7 @@ size_t signupMenu(char* input)
 
 	std::ofstream newUser(filePath);
 	newUser << input << std::endl;
+	int seed = createSeed(input);
 
 	std::cout << "\033[H\033[K"; // moves to first line and erases it
 	std::cout << "(Cannot go back until account creation process is finished!)";
@@ -89,7 +90,7 @@ size_t signupMenu(char* input)
 	
 	createValidPass(input, "Password: ");
 
-	defaultAccoutData(newUser, input);
+	defaultAccoutData(newUser, input, seed);
 	newUser.close();
 
 	successfulSignup(input);

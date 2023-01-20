@@ -22,9 +22,9 @@ struct Level {
 	const unsigned short MAX_HEARTS;
 	const char* NAME;
 	const char* TITLE;
-	const unsigned short TOP_INSTR[5][15];
-	const unsigned short SIDE_INSTR[15][5];
-	const bool DESCRIPTION[15][15];
+	const unsigned short TOP_INSTR[MAX_INSTR_SIZE][MAX_LVL_SIZE];
+	const unsigned short SIDE_INSTR[MAX_LVL_SIZE][MAX_INSTR_SIZE];
+	const bool DESCRIPTION[MAX_LVL_SIZE][MAX_LVL_SIZE];
 };
 
 const Level lvl1_1 = { 
@@ -332,8 +332,8 @@ const Level lvl5_2 = {
 	{
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-		{ 0, 1, 3, 1, 2, 5, 0, 6, 0, 4, 0, 0, 1, 0, 0 },
-		{ 0, 2, 1, 4, 2, 2, 10, 2, 4, 4, 3, 2, 4, 4, 4 },
+		{ 0, 1, 3, 1, 2, 5, 6, 6, 0, 4, 0, 0, 1, 0, 0 },
+		{ 0, 2, 1, 4, 2, 2, 3, 2, 4, 4, 3, 2, 4, 4, 4 },
 		{ 4, 1, 2, 3, 1, 1, 2, 3, 2, 1, 4, 5, 1, 3, 1 }
 	},
 	{
@@ -345,7 +345,7 @@ const Level lvl5_2 = {
 		{ 0, 0, 0, 3, 2 },
 		{ 0, 0, 0, 3, 4 },
 		{ 0, 0, 3, 2, 6 },
-		{ 0, 0, 0, 2, 11 },
+		{ 0, 0, 2, 3, 7 },
 		{ 0, 0, 1, 2, 7 },
 		{ 0, 1, 2, 2, 3 },
 		{ 0, 0, 3, 4, 1 },
@@ -362,7 +362,7 @@ const Level lvl5_2 = {
 		{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1 },
 		{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1 },
 		{ 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1 },
-		{ 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
+		{ 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0 },
 		{ 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
 		{ 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0 },
 		{ 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0 },

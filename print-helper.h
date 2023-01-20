@@ -66,13 +66,20 @@ inline void printAccountMenu(char* input, std::fstream& account, bool incorrectI
 	getSpecifiedLine(FILE_LINE::name, account, input, MAX_INPUT_SIZE);
 	std::cout << input << "!\n\n";
 
-	getSpecifiedLine(curLvl, account, input, MAX_INPUT_SIZE);
-	if (input[0] == '0') {
-		std::cout << "1. New Game\n";
+	getSpecifiedLine(FILE_LINE::curLvl, account, input, MAX_INPUT_SIZE);
+	char curLvl = input[0];
+	getSpecifiedLine(FILE_LINE::nextUnlocked, account, input, MAX_INPUT_SIZE);
+	char next = input[0];
+	if (curLvl == '0') {
+		if (next == '1') {
+			std::cout << "1. New Game\n";
+		}
+		else {
+			std::cout << "1. Next Level\n";
+		}
 	}
 	else {
 		std::cout << "1. Continue Game\n";
-
 	}
 	std::cout << "2. Level Progress\n";
 	std::cout << "3. Settings\n";

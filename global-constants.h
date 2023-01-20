@@ -23,8 +23,12 @@ const size_t MAX_USERNAME_LEN = 20;
 const size_t MIN_PASSWORD_LEN = 5;
 const size_t MAX_PASSWORD_LEN = 20;
 
-const unsigned short MAX_FILE_LINES = 2 + 6 + 1 + 25;
-const unsigned short MAX_LINE_LEN = 25 + 24 + 1;
+const unsigned short NUM_OF_LVL = 5;
+const unsigned short MAX_LVL_SIZE = 15;
+const unsigned short MAX_INSTR_SIZE = 5;
+
+const unsigned short MAX_FILE_LINES = 2 + NUM_OF_LVL + 3 + MAX_LVL_SIZE;
+const unsigned short MAX_LINE_LEN = MAX_LVL_SIZE * 2;
 
 const char ACCOUNT_DIRECTORY[] = "./UserAccounts/";
 const char FILE_EXTENSION[] = ".txt";
@@ -35,12 +39,7 @@ const enum MENU_SELECTION
 	stMenu = 1,
 	login = 2,
 	signup = 3,
-	account = 4,
-	//game = 5,
-	//lvlProg = 6,
-	//settings = 7,
-	//changeName = 8,
-	//changePass = 9
+	account = 4
 };
 
 const enum FILE_LINE
@@ -52,7 +51,7 @@ const enum FILE_LINE
 	lvl3 = 5,
 	lvl4 = 6,
 	lvl5 = 7,
-	lvl6 = 8,
+	nextUnlocked = 8,
 	curLvl = 9,
 	curHP = 10,
 	matrixStart = 11

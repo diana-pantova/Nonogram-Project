@@ -60,13 +60,22 @@ bool accountExists(const char* username, char* filePath)
 	return false;
 }
 
-void defaultAccoutData(std::ofstream& account, char* input)
+void defaultAccoutData(std::ofstream& account, char* input, int seed)
 {
 	encrypt(input);
 	account << input << std::endl;
-	for (unsigned short lineCount = lvl1; lineCount <= curLvl; lineCount++) {
-		account << "0" << std::endl;
+
+	srand(seed);
+
+	for (unsigned short lvl = 0; lvl < NUM_OF_LVL; lvl++) {
+		seed++;
+		account << "0 " << (rand() % 2) + 1 <<" 0" << std::endl;
 	}
+
+	// next unlocked level
+	account << 1 << std::endl;
+	// current level
+	account << 0 << std::endl;
 }
 
 bool openAccount(char* filePath, std::fstream& account)
@@ -93,7 +102,9 @@ void rewriteFileData(char* filePath, char newData[MAX_FILE_LINES][MAX_LINE_LEN],
 	file.seekp(0, std::ios::beg);
 
 	for (unsigned short line = 0; line < MAX_FILE_LINES; line++) {
-		file << newData[line] << std::endl;
+		if (newData[line][0] != '\0') {
+			file << newData[line] << std::endl;
+		}
 	}
 
 	file.close();

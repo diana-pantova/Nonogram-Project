@@ -148,6 +148,17 @@ void createValidPass(char* input, const char* message)
 	} while (!isValid);
 }
 
+int createSeed(char* username)
+{
+	int seed = 0;
+	unsigned short index = 0;
+	while (username[index] != '\0') {
+		seed += username[index];
+		index++;
+	}
+	return seed;
+}
+
 bool correctPassowrd(char* input, char* filePath)
 {
 	std::fstream account;
@@ -260,12 +271,13 @@ void changePassword(char* input, std::fstream& account, char* filePath)
 	myStrCpy(newData[pass - 1], input, MAX_FILE_LINES);
 
 
-	account.seekp(0, std::ios::beg);
+	account.seekg(0, std::ios::beg);
 	for (unsigned short line = 0; line < MAX_FILE_LINES; line++) {
 		if (line != pass - 1) {
 			account.getline(newData[line], MAX_LINE_LEN);
 		}
 	}
+	newData[pass][0] = '\0';
 	
 	rewriteFileData(filePath, newData, account);
 
