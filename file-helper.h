@@ -71,10 +71,10 @@ void defaultAccoutData(std::ofstream& account, char* input, int seed)
 		seed++;
 		account << "0 " << (rand() % 2);
 		if (lvl < NUM_OF_LVL - 2) {
-			account << " " << lvl1_1.MAX_HEARTS << std::endl;
+			account << " " << lvl1_1.MAX_LIVES << std::endl;
 		}
 		else {
-			account << " " << lvl5_1.MAX_HEARTS << std::endl;
+			account << " " << lvl5_1.MAX_LIVES << std::endl;
 		}
 	}
 

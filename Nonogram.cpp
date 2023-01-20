@@ -131,8 +131,8 @@ void game(char* input, std::fstream& account)
 	unsigned short currLives = 0;
 	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE] = {};
 	const Level * level = pickCorrectLevel(input, account, currLives, currProg);
-	
-
+	printBoard(level, currProg, currLives);
+    
 }
 
 size_t accountMenu(char* input)

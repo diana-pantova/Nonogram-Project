@@ -19,7 +19,7 @@ struct Level {
 	const unsigned short LEVEL;
 	const unsigned short SIZE;
 	const unsigned short MAX_INSTR;
-	const unsigned short MAX_HEARTS;
+	const unsigned short MAX_LIVES;
 	const char* NAME;
 	const char* TITLE;
 	const unsigned short TOP_INSTR[MAX_INSTR_SIZE][MAX_LVL_SIZE];

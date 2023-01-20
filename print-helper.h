@@ -112,3 +112,146 @@ inline void successfulPassChange(char* input)
 	std::cout << "(Press enter to continue.)";
 	std::cin.getline(input, 1);
 }
+
+void printHorizontalLine(const Level * lvl, const char thickness)
+{
+	std::cout << "++";
+	for (unsigned short i = 0; i <= lvl->MAX_INSTR * 2; i++) {
+		std::cout << thickness;
+	}
+	for (unsigned short i = 0; i <= lvl->SIZE * 2;i++) {
+		if (i % 10 == 0) {
+			std::cout << "++";
+		}
+		else if (i % 2 == 0) {
+			std::cout << "+";
+		}
+		else {
+			std::cout << thickness << thickness << thickness;
+		}
+	}
+}
+
+void printBoardTop(const Level* lvl)
+{
+	for (unsigned short line = 0; line < lvl->MAX_INSTR; line++) {
+		unsigned short index = 0;
+		std::cout << "||";
+
+		for (unsigned short column = 0; column < lvl->MAX_INSTR; column++) {
+			std::cout << "  ";
+		}
+		std::cout << " ";
+
+		for (unsigned short column = 0; column <= lvl->SIZE * 2; column++) {
+			if (column % 10 == 0) {
+				std::cout << "||";
+			}
+			else if (column % 2 == 0) {
+				std::cout << "|";
+			}
+			else {
+				if (lvl->TOP_INSTR[line][index] == 0) {
+					std::cout << "   ";
+				}
+				else {
+					if (lvl->TOP_INSTR[line][index] < 10) {
+						std::cout << " ";
+					}
+					std::cout << lvl->TOP_INSTR[line][index] << " ";
+				}
+				index++;
+			}
+		}
+		std::cout << std::endl;
+	}
+}
+
+void printBoardBody(const Level* lvl, unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE])
+{
+	// also used for side coordinates
+	unsigned short indexLine = 0;
+	
+	for (unsigned short line = 0; line <= lvl->SIZE * 2; line++) {
+		if (line % 10 == 0) {
+			printHorizontalLine(lvl, '=');
+		}
+		else if (line % 2 == 0) {
+			printHorizontalLine(lvl, '-');
+		}
+		else
+		{
+			std::cout << "|| ";
+			// print side elements
+			unsigned short indexElement = 0;
+			for (unsigned short column = 0; column < lvl->MAX_INSTR; column++) {
+				if (lvl->SIDE_INSTR[indexLine][indexElement] == 0) {
+					std::cout << "  ";
+				}
+				else {
+					if (lvl->SIDE_INSTR[indexLine][indexElement] >= 10) {
+						std::cout << '\b';
+					}
+					std::cout << lvl->SIDE_INSTR[indexLine][indexElement] << " ";
+				}
+				indexElement++;
+			}
+			// print main body
+			indexElement = 0;
+			for (unsigned short column = 0; column <= lvl->SIZE * 2; column++) {
+				if (column % 10 == 0) {
+					std::cout << "||";
+				}
+				else if (column % 2 == 0) {
+					std::cout << "|";
+				}
+				else {
+					if (currProg[indexLine][indexElement] == 0) {
+						std::cout << " - ";
+					}
+					else if (currProg[indexLine][indexElement] == 1) {
+						std::cout << " X ";
+					}
+					else {
+						std::cout << "   ";
+					}
+					indexElement++;
+				}
+			}
+			std::cout << " " << ++indexLine;
+		}
+		std::cout << std::endl;
+	}
+}
+
+void printBottomCoord(const Level* lvl)
+{
+	for (unsigned short i = 0; i < lvl->MAX_INSTR * 2 + 5; i++) {
+		std::cout << " ";
+	}
+	for (unsigned short i = 0; i < lvl->SIZE; i++) {
+		if (i % 5 == 0 && i != 0) {
+			std::cout << " ";
+		}
+		std::cout << " " << (char)('A' + i) << "  ";
+	}
+}
+
+void printBoard(const Level* lvl, unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], unsigned short currLives)
+{
+	std::cout << "(Type b to go back (all progress will be saved).)\n\n";
+	std::cout << "Level " << lvl->LEVEL << " - " << lvl->NAME << " (" << lvl->SIZE << "x" << lvl->SIZE << ")\n\n";
+	std::cout << "Lives: " << currLives << "/" << lvl->MAX_LIVES << std::endl;
+	
+	printHorizontalLine(lvl, '=');
+	std::cout << std::endl;
+	printBoardTop(lvl);
+	printBoardBody(lvl, currProg);
+	printBottomCoord(lvl);
+
+	std::cout << "\nActions:\n";
+	std::cout << "F - fill\n" << "X - cross\n\n";
+	std::cout << "Please type a coordinate and an action (e.g.: A1 F):\n";
+
+
+}
