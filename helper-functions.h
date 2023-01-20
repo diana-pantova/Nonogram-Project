@@ -356,6 +356,13 @@ const Level * pickCorrectLevel(char* input, std::fstream& account, unsigned shor
 	return correctLevel;
 }
 
+const Level* pickedLvlData(const Level* lvl, unsigned short &currLives, unsigned short (&currProg)[MAX_LVL_SIZE][MAX_LVL_SIZE])
+{
+	currLives = lvl->MAX_LIVES;
+	defineCurrProg(currProg);
+	return lvl;
+}
+
 void assignPointCoord(const Level * lvl, Point& A1, Point& print)
 {
 	A1 = {
@@ -580,3 +587,4 @@ bool results(unsigned short result, Point print, char* input, unsigned short cur
 
 	return true;
 }
+

@@ -57,7 +57,6 @@ inline void successfulSignup(char* input)
 	std::cout << "Enjoy!\n\n";
 
 	std::cout << "(Press Enter to continue.)\n";
-	char temp[2] = {};
 	do {
 		std::cin.getline(input, MAX_INPUT_SIZE);
 	} while (input[0] != '\0');
@@ -113,7 +112,6 @@ inline void successfulPassChange(char* input)
 	clearConsole();
 	std::cout << "Password successfully changed.\n\n";
 	std::cout << "(Press enter to continue.)";
-	char temp[2] = {};
 	do {
 		std::cin.getline(input, MAX_INPUT_SIZE);
 	} while (input[0] != '\0');
@@ -290,7 +288,6 @@ inline void gameOver(Point print, char* input)
 	std::cout << "Game Over!\n\n";
 
 	std::cout << "(Press enter to continue.)\n";
-	char temp[2] = {};
 	do {
 		std::cin.getline(input, MAX_INPUT_SIZE);
 	} while (input[0] != '\0');
@@ -304,8 +301,21 @@ inline void successfulLevel(Point print, char* input, const Level * lvl)
 	std::cout << lvl->LEVEL << " - \"" << lvl->TITLE << "\"!\n\n";
 
 	std::cout << "(Press enter to continue.)\n";
-	char temp[2] = {};
 	do {
 		std::cin.getline(input, MAX_INPUT_SIZE);
 	} while (input[0] != '\0');
+}
+
+void printLvlProgMenu(char* input ,std::fstream& account)
+{
+	char lvlStatus[NUM_OF_LVL][26] = {};
+	getLvlStatus(input, account, lvlStatus);
+
+	std::cout << "(Type b to go back.)\n\n";
+	std::cout << "Warning: only one level can be in progress at a current point!\n\n";
+	std::cout << "1. Level 1 - Beginner (3x3)\t" << lvlStatus[0] << "\n";
+	std::cout << "2. Level 2 - Easy (5x5)\t\t" << lvlStatus[1] << "\n";
+	std::cout << "3. Level 3 - Normal (7x7)\t" << lvlStatus[2] << "\n";
+	std::cout << "4. Level 4 - Hard (10x10)\t" << lvlStatus[3] << "\n";
+	std::cout << "5. Level 5 - Expert (15x15)\t" << lvlStatus[4] << "\n\n";
 }

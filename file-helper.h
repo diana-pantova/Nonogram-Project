@@ -152,7 +152,9 @@ void finishedLvlProg(char (&newData)[MAX_FILE_LINES][MAX_LINE_LEN],
 {
 	newData[lvl->LEVEL + FILE_LINE::pass - 1][0] = '1';
 	newData[lvl->LEVEL + FILE_LINE::pass - 1][4] = (char)(currLives + '0');
-	newData[FILE_LINE::nextUnlocked - 1][0] = (char)(lvl->LEVEL + '0');
+	if ((char)(lvl->LEVEL + 1 + '0') > newData[FILE_LINE::nextUnlocked - 1][0]) {
+		newData[FILE_LINE::nextUnlocked - 1][0] = (char)(lvl->LEVEL + 1 + '0');
+	}
 	newData[FILE_LINE::curLvl - 1][0] = '0';
 }
 
@@ -176,4 +178,32 @@ void unfinishedLvlProg(char (&newData)[MAX_FILE_LINES][MAX_LINE_LEN],
 		}
 		newData[line + matrixStart - 1][MAX_LINE_LEN - 1] = '\0';
 	}
+}
+
+void getLvlStatus(char* input, std::fstream& account, char (&lvlStatus)[NUM_OF_LVL][26])
+{
+	getSpecifiedLine(nextUnlocked, account, input, MAX_INPUT_SIZE);
+	unsigned short readLevel = input[0] - '0';
+
+	for (unsigned short level = 0; level < NUM_OF_LVL; level++) {
+		getSpecifiedLine(FILE_LINE::lvl1 + level, account, input, MAX_INPUT_SIZE);
+		if (level + 1 > readLevel) {
+			myStrCpy(lvlStatus[level],"(Locked)", 26);
+		}
+		else if (input[0] == '1') {
+			char temp[26] = "(Completed with   lives)";
+			temp[16] = input[4];
+			myStrCpy(lvlStatus[level], temp, 26);
+		}
+		else {
+			myStrCpy(lvlStatus[level], "(Next level)", 26);
+		}
+	}
+
+	getSpecifiedLine(curLvl, account, input, MAX_INPUT_SIZE);
+	if (input[0] == '0') {
+		return;
+	}
+	readLevel = input[0] - '0';
+	myStrCpy(lvlStatus[readLevel - 1], "(In progress)", 26);
 }

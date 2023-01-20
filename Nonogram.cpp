@@ -129,11 +129,14 @@ void settingsMenu(char* input, std::fstream& account, char* filePath)
 	} while (true);
 }
 
-bool game(char* input, std::fstream& account, char* filePath)
+bool game(char* input, std::fstream& account, char* filePath, const Level * pickedLvl)
 {
 	unsigned short currLives = 0;
 	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE] = {};
-	const Level * lvl = pickCorrectLevel(input, account, currLives, currProg);
+	const Level * lvl = 
+		(pickedLvl == nullptr) ? 
+		pickCorrectLevel(input, account, currLives, currProg) 
+		: pickedLvlData(pickedLvl, currLives, currProg);
 	printBoard(lvl, currProg, currLives);
     
 	Point A1, print;
@@ -191,6 +194,74 @@ bool game(char* input, std::fstream& account, char* filePath)
 	return true;
 }
 
+bool lvlProgCases(char* input, std::fstream& account, char* filePath, bool &incorrectInput)
+{
+	switch (input[0]) {
+	case '1':
+		clearConsole();
+		getSpecifiedLine(FILE_LINE::lvl1, account, input, MAX_INPUT_SIZE);
+		return game(input, account, filePath, listOfLevels(1, input[3] - '0'));
+	case '2':
+		clearConsole();
+		getSpecifiedLine(FILE_LINE::lvl2, account, input, MAX_INPUT_SIZE);
+		return game(input, account, filePath, listOfLevels(2, input[3] - '0'));
+	case '3':
+		clearConsole();
+		getSpecifiedLine(FILE_LINE::lvl3, account, input, MAX_INPUT_SIZE);
+		return game(input, account, filePath, listOfLevels(3, input[3] - '0'));;
+	case '4':
+		clearConsole();
+		getSpecifiedLine(FILE_LINE::lvl4, account, input, MAX_INPUT_SIZE);
+		return game(input, account, filePath, listOfLevels(4, input[3] - '0'));
+	case '5':
+		clearConsole();
+		getSpecifiedLine(FILE_LINE::lvl5, account, input, MAX_INPUT_SIZE);
+		return game(input, account, filePath, listOfLevels(5, input[3] - '0'));
+	default:
+		incorrectInput = true;
+		return false;
+	}
+}
+
+void levelProgressMenu(char* input, std::fstream& account, char* filePath)
+{
+	printLvlProgMenu(input, account);
+	getSpecifiedLine(FILE_LINE::nextUnlocked, account, input, MAX_INPUT_SIZE);
+	unsigned short maxUnlocked = input[0];
+	
+	bool incorrectInput = false;
+	bool locked = false;
+	do {
+		if (incorrectInput) {
+			std::cout << "Incorrect input! ";
+		}
+		else if (locked) {
+			std::cout << "Level is locked! ";
+		}
+		std::cout << "Please type the level number you wish to play:\n";
+		std::cin.getline(input, MAX_INPUT_SIZE);
+		incorrectInput = false;
+
+		if (input[1] == '\0') {
+			if (input[0] == 'b') {
+				return;
+			}
+			if (input[0] > maxUnlocked) {
+				locked = true;
+				std::cout << CSI << "2F" << CSI << "J";
+				continue;
+			}
+			if (lvlProgCases(input, account, filePath, incorrectInput)) {
+				return;
+			}
+		}
+		else {
+			incorrectInput = true;
+		}
+		std::cout << CSI << "2F" << CSI << "J";
+	} while (true);
+}
+
 size_t accountMenu(char* input)
 {
 	std::fstream account;
@@ -210,23 +281,18 @@ size_t accountMenu(char* input)
 		incorrectInput = false;
 		
 		if (input[1] == '\0') {
+			clearConsole();
 			switch (input[0]) {
 			case '1':
-				clearConsole();
-				if (!game(input, account, filePath)) {
+				if (!game(input, account, filePath, nullptr)) {
 					return quit;
-				}
-				else {
-					clearConsole();
 				}
 				break;
 			case '2':
-				//lvl progress
+				levelProgressMenu(input, account, filePath);
 				break;
 			case '3':
-				clearConsole();
 				settingsMenu(input, account, filePath);
-				clearConsole();
 				break;
 			case '4': // logout
 				account.close();
@@ -238,6 +304,7 @@ size_t accountMenu(char* input)
 				incorrectInput = true;
 				break;
 			}
+			clearConsole();
 		}
 		else {
 			incorrectInput = true;
