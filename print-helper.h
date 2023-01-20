@@ -57,7 +57,10 @@ inline void successfulSignup(char* input)
 	std::cout << "Enjoy!\n\n";
 
 	std::cout << "(Press Enter to continue.)\n";
-	std::cin.getline(input, 1);
+	char temp[2] = {};
+	do {
+		std::cin.getline(input, MAX_INPUT_SIZE);
+	} while (input[0] != '\0');
 }
 
 inline void printAccountMenu(char* input, std::fstream& account, bool incorrectInput)
@@ -110,7 +113,10 @@ inline void successfulPassChange(char* input)
 	clearConsole();
 	std::cout << "Password successfully changed.\n\n";
 	std::cout << "(Press enter to continue.)";
-	std::cin.getline(input, 1);
+	char temp[2] = {};
+	do {
+		std::cin.getline(input, MAX_INPUT_SIZE);
+	} while (input[0] != '\0');
 }
 
 void printHorizontalLine(const Level * lvl, const char thickness)
@@ -284,7 +290,10 @@ inline void gameOver(Point print, char* input)
 	std::cout << "Game Over!\n\n";
 
 	std::cout << "(Press enter to continue.)\n";
-	std::cin.getline(input, 1);
+	char temp[2] = {};
+	do {
+		std::cin.getline(input, MAX_INPUT_SIZE);
+	} while (input[0] != '\0');
 }
 
 inline void successfulLevel(Point print, char* input, const Level * lvl)
@@ -295,5 +304,8 @@ inline void successfulLevel(Point print, char* input, const Level * lvl)
 	std::cout << lvl->LEVEL << " - \"" << lvl->TITLE << "\"!\n\n";
 
 	std::cout << "(Press enter to continue.)\n";
-	std::cin.getline(input, 1);
+	char temp[2] = {};
+	do {
+		std::cin.getline(input, MAX_INPUT_SIZE);
+	} while (input[0] != '\0');
 }

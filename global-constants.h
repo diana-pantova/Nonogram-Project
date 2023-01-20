@@ -27,7 +27,7 @@ const unsigned short NUM_OF_LVL = 5;
 const unsigned short MAX_LVL_SIZE = 15;
 const unsigned short MAX_INSTR_SIZE = 5;
 
-const unsigned short MAX_FILE_LINES = 2 + NUM_OF_LVL + 3 + MAX_LVL_SIZE;
+const unsigned short MAX_FILE_LINES = 2 + NUM_OF_LVL + 2 + MAX_LVL_SIZE + 1;
 const unsigned short MAX_LINE_LEN = MAX_LVL_SIZE * 2;
 
 struct Point {

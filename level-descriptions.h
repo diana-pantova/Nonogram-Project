@@ -22,18 +22,20 @@ struct Level {
 	const unsigned short MAX_LIVES;
 	const char* NAME;
 	const char* TITLE;
+	const bool VERSION;
 	const unsigned short TOP_INSTR[MAX_INSTR_SIZE][MAX_LVL_SIZE];
 	const unsigned short SIDE_INSTR[MAX_LVL_SIZE][MAX_INSTR_SIZE];
 	const bool DESCRIPTION[MAX_LVL_SIZE][MAX_LVL_SIZE];
 };
 
 const Level lvl1_1 = { 
-	1, 
+	1,
 	3, 
 	2, 
 	3, 
 	"Beginner", 
 	"Bed",
+	0,
 	{
 		{ 0, 0, 0 },
 		{ 3, 1, 2 }
@@ -57,6 +59,7 @@ const Level lvl1_2 = {
 	3,
 	"Beginner",
 	"Flower",
+	1,
 	{
 		{ 0, 1, 0 },
 		{ 1, 1, 1 } 
@@ -80,6 +83,7 @@ const Level lvl2_1 = {
 	3,
 	"Easy",
 	"Elephant",
+	0,
 	{
 		{ 0, 0, 0, 0, 0},
 		{ 0, 1, 0, 0, 0},
@@ -108,6 +112,7 @@ const Level lvl2_2 = {
 	3,
 	"Easy",
 	"Chick",
+	1,
 	{ 
 		{ 0, 0, 0, 0, 0 }, 
 		{ 0, 1, 0, 0, 0 },
@@ -136,6 +141,7 @@ const Level lvl3_1 = {
 	3,
 	"Normal",
 	"Person",
+	0,
 	{
 		{ 0, 0, 0, 0, 0, 0, 0 },
 		{ 0, 1, 2, 0, 2, 1, 0 },
@@ -168,6 +174,7 @@ const Level lvl3_2 = {
 	3,
 	"Normal",
 	"Music note",
+	1,
 	{
 		{ 0, 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 0, 0, 1, 0 },
@@ -201,6 +208,7 @@ const Level lvl4_1 = {
 	5,
 	"Hard",
 	"Skull",
+	0,
 	{
 		{ 0, 0, 0, 2, 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 1, 0, 4, 0, 1, 0, 0 },
@@ -240,6 +248,7 @@ const Level lvl4_2 = {
 	5,
 	"Hard",
 	"Heart",
+	1,
 	{
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -279,6 +288,7 @@ const Level lvl5_1 = {
 	5,
 	"Expert",
 	"Ship",
+	0,
 	{ 
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0 },
@@ -329,6 +339,7 @@ const Level lvl5_2 = {
 	5,
 	"Expert",
 	"Scissors",
+	1,
 	{
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },

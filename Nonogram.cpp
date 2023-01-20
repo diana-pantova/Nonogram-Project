@@ -79,7 +79,10 @@ size_t signupMenu(char* input)
 		return stMenu;
 	}
 
-	std::ofstream newUser(filePath);
+	std::ofstream newUser;
+	if (!openAccount(filePath, newUser)) {
+		return quit;
+	}
 	newUser << input << std::endl;
 	int seed = createSeed(input);
 
@@ -126,7 +129,7 @@ void settingsMenu(char* input, std::fstream& account, char* filePath)
 	} while (true);
 }
 
-void game(char* input, std::fstream& account)
+bool game(char* input, std::fstream& account, char* filePath)
 {
 	unsigned short currLives = 0;
 	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE] = {};
@@ -153,6 +156,7 @@ void game(char* input, std::fstream& account)
 
 		if (input[0] == 'b' && input[1] == '\0') {
 			goBack = true;
+			break;
 		}
 		validAction = validGameAction(input, lvl, bigBoard);
 		if (!validAction) {
@@ -165,8 +169,7 @@ void game(char* input, std::fstream& account)
 			alrMarked = true;
 			continue;
 		}
-		
-		bool guess = (input[3 + bigBoard] == 'f') ? 1 : 0;
+		bool guess = getGuess(input, bigBoard);
 		correctGuess = isCorrectGuess(action, guess, lvl);
 		
 		if (correctGuess) {
@@ -181,7 +184,11 @@ void game(char* input, std::fstream& account)
 		}
 	} while (!goBack && alive && !success);
 
-	results(assignResult(goBack, alive, success), print, input, currLives, currProg, lvl);
+	unsigned short result = assignResult(goBack, alive, success);
+	if (!results(result, print, input, currLives, currProg, lvl, filePath, account)) {
+		return false;
+	}
+	return true;
 }
 
 size_t accountMenu(char* input)
@@ -206,8 +213,12 @@ size_t accountMenu(char* input)
 			switch (input[0]) {
 			case '1':
 				clearConsole();
-				game(input, account);
-				clearConsole();
+				if (!game(input, account, filePath)) {
+					return quit;
+				}
+				else {
+					clearConsole();
+				}
 				break;
 			case '2':
 				//lvl progress
@@ -236,7 +247,8 @@ size_t accountMenu(char* input)
 	clearConsole();
 	std::cout << "Error! File crashed! Returning to main menu!\n\n";
 	std::cout << "(Press enter to continue.)";
-	std::cin.getline(input, 1);
+	char temp[2] = {};
+	std::cin.getline(temp, 1);
 
 	return stMenu;
 }
@@ -249,30 +261,24 @@ int main()
 	
 	do {
 		switch (select) {
-		case quit:
-			exitProgram = true;
-			break;
 		case stMenu:
 			select = startingMenu(input);
-			clearConsole();
 			break;
 		case login:
 			select = loginMenu(input);
-			clearConsole();
 			break;
 		case signup:
 			select = signupMenu(input);
-			clearConsole();
 			break;
 		case account:
 			select = accountMenu(input);
-			clearConsole();
 			break;
 		default:
 			std::cout << "Error! Unknown selection! Please restart the program.";
-			exitProgram = true;
+			select = quit;
 		}
-	} while (!exitProgram);
+		clearConsole();
+	} while (select != quit);
 
 	return 0;
 }

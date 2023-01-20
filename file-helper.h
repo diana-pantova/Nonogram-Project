@@ -84,27 +84,53 @@ void defaultAccoutData(std::ofstream& account, char* input, int seed)
 	account << 0 << std::endl;
 }
 
-bool openAccount(char* filePath, std::fstream& account)
+template <typename T>
+bool openAccount(char* filePath, T& account)
 {
 	account.open(filePath);
-
 	if (account.fail()) {
 		account.close();
 		std::cout << "Account data couldn't be accessed.\nPlease go back and try again.\n\n";
 		std::cout << "(Press enter to continue.)";
-		std::cin.getline(filePath, 1);
+		do {
+			std::cin.getline(filePath, MAX_INPUT_SIZE);
+		} while (filePath[0] != '\0');
 		return false;
 	}
-
 	return true;
 }
 
-void rewriteFileData(char* filePath, char newData[MAX_FILE_LINES][MAX_LINE_LEN], std::fstream& account)
+void readCurrProg(unsigned short(&currProg)[MAX_LVL_SIZE][MAX_LVL_SIZE], std::fstream& account)
+{
+	account.seekg(-3, std::ios::end);
+	for (int line = MAX_LVL_SIZE - 1; line >= 0; line--) {
+		for (int element = MAX_LVL_SIZE - 1; element >= 0; element--) {
+			char c;
+			account.get(c);
+			currProg[line][element] = (unsigned short)(c - '0');
+			account.seekg(-3, std::ios::cur);
+		}
+		account.seekg(-1, std::ios::cur);
+	}
+}
+
+void copyAccData(std::fstream& account, char (&data)[MAX_FILE_LINES][MAX_LINE_LEN])
+{
+	account.seekg(0, std::ios::beg);
+	for (unsigned short line = 0; line < MAX_FILE_LINES; line++) {
+		account.getline(data[line], MAX_LINE_LEN);
+	}
+}
+
+bool rewriteFileData(char* filePath, char newData[MAX_FILE_LINES][MAX_LINE_LEN], std::fstream& account)
 {
 	account.close();
 
 	std::ofstream file;
-	file.open(filePath);
+	if (!openAccount(filePath, file)) {
+		return false;
+	}
+
 	file.seekp(0, std::ios::beg);
 
 	for (unsigned short line = 0; line < MAX_FILE_LINES; line++) {
@@ -114,6 +140,40 @@ void rewriteFileData(char* filePath, char newData[MAX_FILE_LINES][MAX_LINE_LEN],
 	}
 
 	file.close();
-	account.open(filePath);
+
+	if (!openAccount(filePath, account)) {
+		return false;
+	}
+	return true;
 }
 
+void finishedLvlProg(char (&newData)[MAX_FILE_LINES][MAX_LINE_LEN],
+	unsigned short currLives, const Level * lvl)
+{
+	newData[lvl->LEVEL + FILE_LINE::pass - 1][0] = '1';
+	newData[lvl->LEVEL + FILE_LINE::pass - 1][4] = (char)(currLives + '0');
+	newData[FILE_LINE::nextUnlocked - 1][0] = (char)(lvl->LEVEL + '0');
+	newData[FILE_LINE::curLvl - 1][0] = '0';
+}
+
+void unfinishedLvlProg(char (&newData)[MAX_FILE_LINES][MAX_LINE_LEN],
+	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], unsigned short currLives, const Level* lvl)
+{
+	newData[FILE_LINE::curLvl - 1][0] = (char)(lvl->LEVEL + '0');
+	newData[FILE_LINE::curLvl - 1][1] = ' ';
+	newData[FILE_LINE::curLvl - 1][2] = (char)(lvl->VERSION + '0');
+	newData[FILE_LINE::curLvl - 1][3] = ' ';
+	newData[FILE_LINE::curLvl - 1][4] = (char)(currLives + '0');
+
+	for (unsigned short line = 0; line < MAX_LVL_SIZE; line++) {
+		for (unsigned short element = 0; element < MAX_LINE_LEN; element++) {
+			if (element % 2 == 0) {
+				newData[line + matrixStart - 1][element] = (char)(currProg[line][element / 2] + '0');
+			}
+			else {
+				newData[line + matrixStart - 1][element] = ' ';
+			}
+		}
+		newData[line + matrixStart - 1][MAX_LINE_LEN - 1] = '\0';
+	}
+}

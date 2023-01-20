@@ -162,10 +162,8 @@ int createSeed(char* username)
 bool correctPassowrd(char* input, char* filePath)
 {
 	std::fstream account;
-	account.open(filePath);
 	
-	if (account.fail()) {
-		std::cout <<  "\n\033[J" << "Account data couldn't be accessed.\nPlease go back and try again.";
+	if (!openAccount(filePath, account)) {
 		return false;
 	}
 
@@ -321,20 +319,6 @@ const Level* listOfLevels(unsigned short level, bool version)
 	return nullptr;
 }
 
-void readCurrProg(unsigned short(&currProg)[MAX_LVL_SIZE][MAX_LVL_SIZE], std::fstream& account)
-{
-	account.seekg(-1, std::ios::end);
-	for (int i = MAX_LVL_SIZE - 1; i >= 0; i--) {
-		for (int j = MAX_LVL_SIZE - 1; j >= 0; j--) {
-			char c;
-			account.get(c);
-			currProg[i][j] = (unsigned short)(c - '0');
-			account.seekg(-3, std::ios::cur);
-		}
-		account.seekg(-1, std::ios::cur);
-	}
-}
-
 void defineCurrProg(unsigned short (&currProg)[MAX_LVL_SIZE][MAX_LVL_SIZE])
 {
 	for (int i = 0; i < MAX_LVL_SIZE; i++) {
@@ -388,29 +372,41 @@ bool validGameAction(char* input, const Level * lvl, bool bigBoard)
 {
 	size_t inputLen = myStrLen(input);
 
-	if (inputLen != (size_t)(4 + bigBoard)) {
-		return false;
-	}
-	else if (input[0] < 'a' || input[0] >= ('a' + lvl->SIZE)) {
-		return false;
-	}
-	else if (input[1 + bigBoard] < '1' || input[1] >= ('1' + lvl->SIZE)) {
-		return false;
-	}
-	else if (input[2 + bigBoard] != ' ') {
-		return false;
-	}
-	else if (!(input[3 + bigBoard] == 'f' || input[3] == 'e')) {
-		return false;
-	}
-
-	if (bigBoard) {
-		if (input[1] < '1' || input[1] > '9') {
+	if (inputLen == 4) {
+		if (input[0] < 'a' || input[0] >= ('a' + lvl->SIZE)) {
 			return false;
 		}
+		else if (input[1] < '1' || input[1] >= ('1' + lvl->SIZE)) {
+			return false;
+		}
+		else if (input[2] != ' ') {
+			return false;
+		}
+		else if (!(input[3] == 'f' || input[3] == 'e')) {
+			return false;
+		}
+		return true;
+	}
+	else if (inputLen == 5) {
+		if (input[0] < 'a' || input[0] >= ('a' + lvl->SIZE)) {
+			return false;
+		}
+		else if (input[1] < '1' || input[1] > '9') {
+			return false;
+		}
+		else if (input[2] < '0' || input[2] > ('0' + lvl->SIZE % 10)) {
+			return false;
+		}
+		else if (input[3] != ' ') {
+			return false;
+		}
+		else if (!(input[4] == 'f' || input[4] == 'e')) {
+			return false;
+		}
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 void getActionCoord(Point& action, char* input, bool bigBoard)
@@ -424,6 +420,14 @@ void getActionCoord(Point& action, char* input, bool bigBoard)
 	else {
 		action.y = input[1] - '1';
 	}
+}
+
+bool getGuess(char* input, bool bigBoard)
+{
+	if (bigBoard && input[3] == ' ') {
+		return input[4] == 'f';
+	}
+	return input[3] == 'f';
 }
 
 inline bool isCorrectGuess(Point action, bool guess, const Level* lvl)
@@ -546,22 +550,33 @@ unsigned short assignResult(bool goBack, bool alive, bool success)
 	if (goBack) {
 		return 2;
 	}
+	return 2;
 }
 
-void results(unsigned short result, Point print, char* input, unsigned short currLives,
-	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], const Level * lvl)
+bool results(unsigned short result, Point print, char* input, unsigned short currLives,
+	unsigned short currProg[MAX_LVL_SIZE][MAX_LVL_SIZE], const Level * lvl, char* filePath, std::fstream& account)
 {
+	char newData[MAX_FILE_LINES][MAX_LINE_LEN] = {};
+	copyAccData(account, newData);
+
 	switch (result) {
 	case 0:
+		finishedLvlProg(newData, currLives, lvl);
 		successfulLevel(print, input, lvl);
-		//update account
-		return;
+		break;
 	case 1:
+		newData[FILE_LINE::curLvl][0] = '0';
 		gameOver(print, input);
-		//update account
-		return;
+		break;
 	case 2:
-		//save progress
-		return;
+		unfinishedLvlProg(newData, currProg, currLives, lvl);
+		break;
+	default:
+		break;
 	}
+	if (!rewriteFileData(filePath, newData, account)) {
+		false;
+	}
+
+	return true;
 }
